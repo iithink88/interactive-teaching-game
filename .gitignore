@@ -1,0 +1,12 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Build artifacts / user data generated locally
+user-data/
+gen_images.py
+
+# OS
+.DS_Store
+Thumbs.db
