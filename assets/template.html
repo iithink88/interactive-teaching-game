@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --text-bg: rgba(255, 255, 255, 0.9);
+            --text-color: #333;
+            --btn-bg: rgba(255, 255, 255, 0.95);
+            --btn-hover: #fff;
+            --font-main: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        
+        body {
+            font-family: var(--font-main);
+            background-color: #000;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            max-width: 1200px; /* Max width for desktop */
+            aspect-ratio: 16/9;
+            background-color: #333;
+            overflow: hidden;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+        }
+
+        /* Loading Screen */
+        #loading-layer {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #1a1a1a;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s;
+        }
+        
+        #loading-layer.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top: 4px solid #4a90e2;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        .loading-text {
+            color: #fff;
+            margin-top: 20px;
+            font-size: 1.2em;
+        }
+        
+        .loading-progress {
+            color: #888;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+        
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Background Image Layer */
+        #bg-layer {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-color: #1a1a1a;
+            transition: opacity 0.5s ease-in-out;
+            z-index: 0;
+        }
+        
+        #bg-layer.fade-out {
+            opacity: 0;
+        }
+
+        /* Mobile Adaptation */
+        @media (max-width: 768px) {
+            #bg-layer {
+                background-size: contain;
+                background-repeat: no-repeat;
+                background-position: center 18vh;
+            }
+        }
+
+        /* Content Layer */
+        .layer {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s;
+        }
+
+        .layer.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Start Screen */
+        .start-card {
+            background: rgba(255, 255, 255, 0.85);
+            padding: 40px 60px;
+            border-radius: 12px;
+            text-align: center;
+            max-width: 600px;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .start-card h1 { font-size: 2.5em; margin-bottom: 20px; color: #2c3e50; }
+        .start-card p { font-size: 1.2em; line-height: 1.6; margin-bottom: 30px; color: #555; }
+        
+        button {
+            padding: 12px 30px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            background: #2c3e50;
+            color: white;
+            transition: transform 0.2s, background 0.2s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        button:hover { transform: translateY(-2px); background: #34495e; }
+
+        /* Game UI */
+        #dialogue-box {
+            position: absolute;
+            bottom: 5%;
+            left: 5%;
+            width: 90%;
+            background: var(--text-bg);
+            padding: 25px 35px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        #story-text {
+            font-size: 1.3em;
+            line-height: 1.6;
+            color: #222;
+            min-height: 80px;
+        }
+
+        .choices-container {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .choice-btn {
+            background: white;
+            color: #333;
+            border: 2px solid #ddd;
+            padding: 10px 20px;
+            font-size: 1em;
+            text-align: center;
+            flex: 1 1 300px; /* Responsive grid */
+        }
+
+        .choice-btn:hover {
+            border-color: #4a90e2;
+            color: #4a90e2;
+            background: #f8fbff;
+        }
+
+        /* Review Screen */
+        #review-layer {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+        }
+
+        .review-card {
+            background: #fff;
+            width: 80%;
+            height: 80%;
+            border-radius: 20px;
+            padding: 40px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .review-section {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 20px;
+        }
+        
+        .review-section h2 { color: #4a90e2; margin-bottom: 15px; }
+        .review-list li { margin-bottom: 10px; line-height: 1.5; color: #555; list-style-position: inside;}
+        .path-item { padding: 10px; background: #f9f9f9; margin-bottom: 8px; border-radius: 8px; font-size: 0.9em; }
+        .path-item.correct { border-left: 4px solid #4caf50; }
+        .path-item.wrong { border-left: 4px solid #f44336; }
+
+        /* Animation */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.5s forwards; }
+
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <!-- Loading Screen -->
+        <div id="loading-layer">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">加载资源中...</div>
+            <div class="loading-progress" id="loading-progress">准备游戏</div>
+        </div>
+
+        <!-- Background -->
+        <div id="bg-layer" style="background-image: url('');"></div>
+
+        <!-- Start Screen -->
+        <div id="start-layer" class="layer active">
+            <div class="start-card fade-in">
+                <h1 id="title-text">{{ title }}</h1>
+                <p id="intro-text"></p>
+                <button onclick="game.start()">开始体验</button>
+            </div>
+        </div>
+
+        <!-- Gameplay Screen -->
+        <div id="game-layer" class="layer">
+            <div id="dialogue-box">
+                <p id="story-text"></p>
+                <div class="choices-container" id="choices-area">
+                    <!-- Buttons injected here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Feedback Overlay (Modal) -->
+        <div id="feedback-layer" class="layer" style="background: rgba(0,0,0,0.4);">
+             <div class="start-card fade-in" style="max-width: 500px;">
+                <h2 id="feedback-title" style="margin-bottom:15px;"></h2>
+                <p id="feedback-text"></p>
+                <button onclick="game.nextScene()" style="margin-top: 20px;">继续</button>
+            </div>
+        </div>
+
+        <!-- Review Screen -->
+        <div id="review-layer" class="layer">
+            <div class="review-card fade-in">
+                <h1 style="text-align: center; margin-bottom: 20px;">课程复盘</h1>
+                
+                <div class="review-section">
+                    <h2>📚 你的选择路径</h2>
+                    <div id="path-review-list"></div>
+                </div>
+
+                <div class="review-section">
+                    <h2>💡 核心解析</h2>
+                    <ul class="review-list" id="knowledge-points"></ul>
+                </div>
+
+                <div class="review-section" style="border:none;">
+                    <h2>🗣️ 课堂讨论</h2>
+                    <ul class="review-list" id="discussion-questions"></ul>
+                </div>
+                
+                <button onclick="location.reload()" style="align-self: center; margin-top: 20px;">重新体验</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data injected by Python Builder
+        const gameData = {{ game_data }};
+
+        class GameEngine {
+            constructor(data) {
+                this.data = data;
+                this.currentSceneId = data.start_scene_id;
+                this.history = []; // Stores {scene, choice, feedback}
+                this.imageCache = {}; // Preloaded images cache
+                this.sceneChoicesOrder = {}; // Cache shuffled choices order per scene
+                this.failedImages = []; // Track failed images
+                
+                // Update loading text
+                document.getElementById('loading-progress').innerText = '加载配置...';
+                
+                // Init UI
+                document.getElementById('intro-text').innerText = data.intro;
+                
+                // Preload all images
+                this.preloadAllImages().then(() => {
+                    // Set cover image
+                    if (data.cover_image && this.imageCache[data.cover_image]) {
+                        document.getElementById('bg-layer').style.backgroundImage = `url('${data.cover_image}')`;
+                    }
+                    
+                    // Show failed images warning if any
+                    if (this.failedImages.length > 0) {
+                        const failedList = this.failedImages.join(', ');
+                        console.error(`以下图片加载失败: ${failedList}`);
+                        console.error('请检查图片路径是否正确，或图片文件是否存在');
+                    }
+                    
+                    // Hide loading screen with delay for smooth transition
+                    setTimeout(() => {
+                        document.getElementById('loading-layer').classList.add('hidden');
+                    }, 500);
+                    
+                    this.renderReviewStatic();
+                }).catch((error) => {
+                    console.error('预加载失败:', error);
+                    document.getElementById('loading-progress').innerText = '加载失败，请刷新重试';
+                });
+            }
+
+            preloadAllImages() {
+                const imageUrls = [];
+                
+                // Collect cover image
+                if (this.data.cover_image) {
+                    imageUrls.push(this.data.cover_image);
+                }
+                
+                // Collect scene images
+                if (this.data.scenes) {
+                    this.data.scenes.forEach(scene => {
+                        if (scene.image) {
+                            imageUrls.push(scene.image);
+                        }
+                    });
+                }
+                
+                const total = imageUrls.length;
+                let loaded = 0;
+                
+                const updateProgress = () => {
+                    loaded++;
+                    const percent = Math.round((loaded / total) * 100);
+                    document.getElementById('loading-progress').innerText = `加载资源 ${loaded}/${total} (${percent}%)`;
+                };
+                
+                // Preload all images
+                const promises = imageUrls.map(url => 
+                    this.preloadImage(url).then(updateProgress)
+                );
+                
+                return Promise.all(promises);
+            }
+
+            preloadImage(url) {
+                return new Promise((resolve) => {
+                    if (this.imageCache[url]) {
+                        resolve(this.imageCache[url]);
+                        return;
+                    }
+                    
+                    const img = new Image();
+                    img.onload = () => {
+                        this.imageCache[url] = img;
+                        console.log(`✓ 图片加载成功: ${url.substring(0, 50)}...`);
+                        resolve(img);
+                    };
+                    img.onerror = () => {
+                        console.error(`✗ 图片加载失败: ${url}`);
+                        console.error(`  可能的原因: 1. 图片路径错误 2. Base64数据损坏 3. 图片格式不支持`);
+                        this.failedImages.push(url);
+                        resolve(null);
+                    };
+                    img.src = url;
+                });
+            }
+
+            shuffleArray(array) {
+                const shuffled = [...array];
+                for (let i = shuffled.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+                }
+                return shuffled;
+            }
+
+            start() {
+                this.switchLayer('game-layer');
+                this.loadScene(this.currentSceneId);
+            }
+
+            loadScene(sceneId) {
+                const scene = this.data.scenes.find(s => s.id === sceneId);
+                
+                // Check if scene exists - if not, auto finish game
+                if (!scene) {
+                    console.log(`场景 [${sceneId}] 不存在，游戏结束，进入复盘`);
+                    this.finish();
+                    return;
+                }
+
+                const bgLayer = document.getElementById('bg-layer');
+                const textBox = document.getElementById('story-text');
+                const choicesArea = document.getElementById('choices-area');
+
+                // Fade out background, then update and fade in
+                if (scene.image) {
+                    // Check if image was preloaded successfully
+                    if (!this.imageCache[scene.image]) {
+                        console.error(`场景图片加载失败，尝试重新加载: ${scene.image}`);
+                        // Retry loading
+                        const retryImg = new Image();
+                        retryImg.onload = () => {
+                            this.imageCache[scene.image] = retryImg;
+                            bgLayer.style.backgroundImage = `url('${scene.image}')`;
+                        };
+                        retryImg.onerror = () => {
+                            console.error(`重新加载失败，跳过该图片: ${scene.image}`);
+                        };
+                        retryImg.src = scene.image;
+                    } else {
+                        bgLayer.classList.add('fade-out');
+                        setTimeout(() => {
+                            bgLayer.style.backgroundImage = `url('${scene.image}')`;
+                            bgLayer.classList.remove('fade-out');
+                        }, 300);
+                    }
+                }
+
+                // Update Text with fade
+                textBox.innerHTML = scene.text;
+                textBox.classList.remove('fade-in');
+                void textBox.offsetWidth; // trigger reflow
+                textBox.classList.add('fade-in');
+
+                // Generate Choices
+                choicesArea.innerHTML = '';
+                
+                if (scene.choices && scene.choices.length > 0) {
+                    // Get or create shuffled order for this scene (only shuffle once per scene)
+                    if (!this.sceneChoicesOrder[sceneId]) {
+                        this.sceneChoicesOrder[sceneId] = this.shuffleArray(scene.choices);
+                    }
+                    const orderedChoices = this.sceneChoicesOrder[sceneId];
+                    
+                    orderedChoices.forEach(choice => {
+                        const btn = document.createElement('button');
+                        btn.className = 'choice-btn';
+                        btn.innerText = choice.text;
+                        btn.onclick = () => this.handleChoice(scene, choice);
+                        choicesArea.appendChild(btn);
+                    });
+                } else {
+                    // No choices - auto finish game
+                    console.log(`场景 [${sceneId}] 没有选项，游戏结束，进入复盘`);
+                    // Add a small delay for the text to display before finishing
+                    setTimeout(() => {
+                        this.finish();
+                    }, 2000);
+                }
+            }
+
+            handleChoice(scene, choice) {
+                // Record history only for correct choices to avoid duplicates on retry
+                if (choice.is_correct) {
+                    this.history.push({
+                        sceneTitle: `场景 ${this.history.length + 1}`,
+                        choiceText: choice.text,
+                        isCorrect: choice.is_correct,
+                        feedback: choice.feedback
+                    });
+                }
+
+                // Show feedback if exists, else next scene
+                if (choice.feedback) {
+                    document.getElementById('feedback-title').innerText = choice.is_correct ? "\u2705 抉择分析" : "另辟蹊径";
+                    document.getElementById('feedback-title').style.color = choice.is_correct ? "#4caf50" : "#ff9800";
+                    document.getElementById('feedback-text').innerText = choice.feedback;
+                    // Correct: go to next scene; Wrong: stay on current scene
+                    this.nextSceneTarget = choice.is_correct ? choice.next_scene_id : scene.id;
+                    this.switchLayer('feedback-layer');
+                } else {
+                    // No feedback: direct transition based on correctness
+                    this.currentSceneId = choice.is_correct ? choice.next_scene_id : scene.id;
+                    this.loadScene(this.currentSceneId);
+                }
+            }
+
+            nextScene() {
+                if (this.nextSceneTarget) {
+                    this.currentSceneId = this.nextSceneTarget;
+                    this.nextSceneTarget = null;
+                    this.switchLayer('game-layer');
+                    
+                    // Check if next scene exists before loading
+                    const nextScene = this.data.scenes.find(s => s.id === this.currentSceneId);
+                    if (nextScene) {
+                        this.loadScene(this.currentSceneId);
+                    } else {
+                        // Scene doesn't exist, auto finish
+                        console.log(`场景 [${this.currentSceneId}] 不存在，游戏结束，进入复盘`);
+                        this.finish();
+                    }
+                }
+            }
+
+            finish() {
+                this.renderReviewDynamic();
+                this.switchLayer('review-layer');
+            }
+
+            switchLayer(layerId) {
+                document.querySelectorAll('.layer').forEach(l => l.classList.remove('active'));
+                document.getElementById(layerId).classList.add('active');
+            }
+
+            renderReviewStatic() {
+                const kList = document.getElementById('knowledge-points');
+                this.data.review.knowledge_points.forEach(p => {
+                    const li = document.createElement('li');
+                    li.innerText = p;
+                    kList.appendChild(li);
+                });
+
+                const dList = document.getElementById('discussion-questions');
+                this.data.review.discussion.forEach(q => {
+                    const li = document.createElement('li');
+                    li.innerText = q;
+                    dList.appendChild(li);
+                });
+            }
+
+            renderReviewDynamic() {
+                const pathList = document.getElementById('path-review-list');
+                pathList.innerHTML = '';
+                this.history.forEach(h => {
+                    const div = document.createElement('div');
+                    div.className = `path-item ${h.isCorrect === true ? 'correct' : (h.isCorrect === false ? 'wrong' : '')}`;
+                    div.innerHTML = `<strong>${h.sceneTitle}:</strong> ${h.choiceText} <br><span style="color:#666;font-size:0.9em">${h.feedback || ''}</span>`;
+                    pathList.appendChild(div);
+                });
+            }
+        }
+
+        const game = new GameEngine(gameData);
+
+    </script>
+</body>
+</html>
