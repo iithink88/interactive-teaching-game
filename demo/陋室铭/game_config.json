@@ -1,0 +1,95 @@
+{
+  "title": "陋室铭·互动探秘",
+  "intro": "走进刘禹锡的陋室，在每一关做出正确的文学抉择，集齐「德馨」碎片，领悟「何陋之有」的真意。",
+  "cover_image": "images/cover.jpg",
+  "start_scene_id": "1",
+  "scenes": [
+    {
+      "id": "1",
+      "text": "青山不高，因仙而闻名；深潭不深，因龙而显灵。作者以此引出自己的陋室。",
+      "image_prompt": "水墨风格，雾气缭绕的远山与一汪静水，山顶点缀一抹仙气，整体清远空灵。",
+      "image": "images/scene1.jpg",
+      "choices": [
+        {"text": "借山水起兴，引出陋室主题", "next_scene_id": "2", "is_correct": true, "feedback": "正确！这是托物起兴的手法，用仙山灵水铺垫「陋室不陋」。"},
+        {"text": "描写真实存在的山水景色", "next_scene_id": "1", "is_correct": false, "feedback": "此处并非写实景，而是用山水作比，为下文「斯是陋室」蓄势。"},
+        {"text": "表达对自然山水的喜爱", "next_scene_id": "1", "is_correct": false, "feedback": "重点不在山水本身，而在借它引出「德馨」的主旨。"}
+      ]
+    },
+    {
+      "id": "2",
+      "text": "这是一间简陋的屋子，只因我的品德高尚而香气远播。",
+      "image_prompt": "水墨风格，一间朴素茅草屋，窗内透出温暖的微光，屋旁几竿翠竹，宁静雅致。",
+      "image": "images/scene2.jpg",
+      "choices": [
+        {"text": "斯是陋室，惟吾德馨", "next_scene_id": "3", "is_correct": true, "feedback": "正确！这是全篇文眼，「德馨」是「陋室不陋」的根本原因。"},
+        {"text": "斯是陋室，惟吾德贫", "next_scene_id": "2", "is_correct": false, "feedback": "原句是「德馨」而非「德贫」，品德芬芳才是作者要强调的。"},
+        {"text": "斯是陋室，惟吾财丰", "next_scene_id": "2", "is_correct": false, "feedback": "陋室恰恰物质匮乏，作者以精神富有傲视物质。"}
+      ]
+    },
+    {
+      "id": "3",
+      "text": "苔痕漫上石阶一片翠绿，草色映入帘内满眼青葱。陋室环境清幽自然。",
+      "image_prompt": "水墨风格，青石台阶上布满绿色苔藓，竹帘半卷，帘外草色青青，生机盎然。",
+      "image": "images/scene3.jpg",
+      "choices": [
+        {"text": "苔痕上阶绿，草色入帘青", "next_scene_id": "4", "is_correct": true, "feedback": "正确！对偶句写室外生机，以清幽之景衬托「德馨」之雅。"},
+        {"text": "苔痕上阶绿，雪花落窗白", "next_scene_id": "3", "is_correct": false, "feedback": "原句写草色入帘青，是春日生机的绿意，并非冬雪。"},
+        {"text": "灰尘满阶厚，蛛网挂檐角", "next_scene_id": "3", "is_correct": false, "feedback": "作者写的是清幽雅致，并非破败脏乱。"}
+      ]
+    },
+    {
+      "id": "4",
+      "text": "与我谈笑的都是博学之士，往来的没有无知平民。交往高雅脱俗。",
+      "image_prompt": "水墨风格，两位长袍文士相对而坐，中间一张矮几，似在清谈，气韵儒雅。",
+      "image": "images/scene4.jpg",
+      "choices": [
+        {"text": "谈笑有鸿儒，往来无白丁", "next_scene_id": "5", "is_correct": true, "feedback": "正确！以交往之人的高雅，侧面烘托主人的品位与修养。"},
+        {"text": "谈笑有白丁，往来无鸿儒", "next_scene_id": "4", "is_correct": false, "feedback": "原句恰恰相反——与鸿儒为友，不与白丁往来。"},
+        {"text": "谈笑皆商贾，往来尽权贵", "next_scene_id": "4", "is_correct": false, "feedback": "刘禹锡重学问轻权钱，句中是「鸿儒」而非商贾权贵。"}
+      ]
+    },
+    {
+      "id": "5",
+      "text": "可以弹奏朴素的古琴，翻阅用金粉写就的佛经。室中生活闲适高雅。",
+      "image_prompt": "水墨风格，一张古朴古琴横陈，旁置一卷经书，案头清供，闲雅自在。",
+      "image": "images/scene5.jpg",
+      "choices": [
+        {"text": "可以调素琴，阅金经", "next_scene_id": "6", "is_correct": true, "feedback": "正确！「素琴」「金经」写精神生活之富足，不慕奢华。"},
+        {"text": "可以调锦瑟，阅兵书", "next_scene_id": "5", "is_correct": false, "feedback": "原句是「素琴」与「金经」，素雅方合隐逸之趣。"},
+        {"text": "可以饮美酒，赏歌舞", "next_scene_id": "5", "is_correct": false, "feedback": "作者以清雅自守，绝非声色犬马。"}
+      ]
+    },
+    {
+      "id": "6",
+      "text": "没有嘈杂音乐扰乱耳朵，没有公文劳累身心。远离官场喧嚣。",
+      "image_prompt": "水墨风格，一方空净书案，一枝疏竹，无丝竹无文书，一片澄明寂静。",
+      "image": "images/scene6.jpg",
+      "choices": [
+        {"text": "无丝竹之乱耳，无案牍之劳形", "next_scene_id": "7", "is_correct": true, "feedback": "正确！正反对比，凸显不受世俗羁绊的自由与安宁。"},
+        {"text": "有丝竹以悦耳，有案牍以劳形", "next_scene_id": "6", "is_correct": false, "feedback": "原句以「无」字否定，正是厌弃官场烦扰。"},
+        {"text": "丝竹声声入，案牍夜夜忙", "next_scene_id": "6", "is_correct": false, "feedback": "这与作者所求的清静恰恰相反。"}
+      ]
+    },
+    {
+      "id": "7",
+      "text": "南阳有诸葛亮的草庐，西蜀有扬雄的子云亭。孔子说：有什么简陋的呢？",
+      "image_prompt": "水墨风格，陋室立于月下，远处隐现两座小亭庐，天心一轮明月，意境高远。",
+      "image": "images/scene7.jpg",
+      "choices": [
+        {"text": "南阳诸葛庐，西蜀子云亭。孔子云：何陋之有", "next_scene_id": "", "is_correct": true, "feedback": "正确！以古贤自况，引孔子语收束，点明「德馨则不陋」。"},
+        {"text": "借问梅花信，西窗剪烛红", "next_scene_id": "7", "is_correct": false, "feedback": "此句非《陋室铭》原文，结尾当引诸葛、子云与孔子。"},
+        {"text": "洛阳亲友如相问，一片冰心在玉壶", "next_scene_id": "7", "is_correct": false, "feedback": "这是王昌龄诗句，非刘禹锡《陋室铭》结尾。"}
+      ]
+    }
+  ],
+  "review": {
+    "knowledge_points": [
+      "托物言志：借「陋室」抒发安贫乐道、高洁傲岸的情操，物质简陋而精神丰盈。",
+      "起兴与类比：以山水仙龙引出「德馨」，用诸葛庐、子云亭类比，引孔子语点题。"
+    ],
+    "discussion": [
+      "在物质丰富的今天，「惟吾德馨」对我们为人处世有什么启示？",
+      "全文仅八十一字，作者用了哪些手法让它意蕴深远、朗朗上口？"
+    ]
+  }
+}
